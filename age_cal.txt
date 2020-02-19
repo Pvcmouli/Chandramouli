@@ -1,0 +1,52 @@
+from collections import Counter
+import csv;
+from datetime import datetime
+
+total_rows = [];
+
+##### reading employee data..
+with open('employee_data.csv', mode='r') as csv_file:
+    csv_reader = csv.reader(csv_file, delimiter=',')
+    count = 0;
+
+    for row in csv_reader:
+        # print(count )
+        count = count + 1
+
+        if count != 1:
+
+            current_date = datetime.now().date()
+
+            date_of_joining: list = row[5].split('/')
+            if len(date_of_joining) == 1:
+                date_of_joining = row[5].split('-')
+            join_year_rem = (12 - int(date_of_joining[0]))
+            diff_mon = ((int(current_date.year)-1) - int(date_of_joining[2])) * 12  
+            curr_year_comp = int(current_date.month) 
+            row[6] = join_year_rem + diff_mon + curr_year_comp
+           
+
+            date_of_birth: list = row[4].split('/')
+            if len(date_of_birth) == 1:
+                date_of_birth = row[4].split('-')
+            row[7] = (int(current_date.year) - int(date_of_birth[2]))      ### getting the year count 
+              
+            if current_date.month < int(date_of_birth[0]):                 ### comparing the months
+                row[7] = row[7] - 1                                        ### modification in result
+
+          
+            list_row = [row[0], row[1], row[2], row[3], row[4], row[5], row[6], row[7]]
+
+            total_rows.append(list_row)
+
+print(total_rows)
+
+fields = ['Emp ID', 'First Name', 'Gender', 'E Mail', 'Date of Birth',
+          'Date of Joining', 'Experience in Months', 'Age in Years']
+
+###### Output Writing...
+with open('output.csv', 'w') as csvfile:
+    csvwriter = csv.writer(csvfile)
+    csvwriter.writerow(fields)
+    csvwriter.writerows(total_rows)
+
